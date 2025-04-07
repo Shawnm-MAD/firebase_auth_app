@@ -238,7 +238,7 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
                 return 'Password must be at least 6 characters';
               }
               return null;
-            }
+            },
           ),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
@@ -265,6 +265,74 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProfileScreen extends StatelessWidget {
+  final FirebaseAuth auth = FirebaseAuth.instance;
+
+  ProfileScreen({super.key});
+
+  final TextEditingController PasswordController = TextEditingController();
+
+  void _changePassword(BuildContext context) async {
+    try {
+      if (PasswordController.text.length < 6) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Password must be at least 6 characters.")),
+        );
+        return;
+      }
+
+      await auth.currentUser?.updatePassword(PasswordController.text);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Password changed successfully")));
+      PasswordController.clear();
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error")));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = auth.currentUser;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Profile"),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: () => Text('Successful'),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            Text(
+              "Logged in as: ${user?.email ?? 'N/A'}",
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+            TextField(
+              controller: PasswordController,
+              obscureText: true,
+              decoration: InputDecoration(labelText: "New Password"),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () => _changePassword(context),
+              child: Text("Change Password"),
+            ),
+          ],
+        ),
       ),
     );
   }
