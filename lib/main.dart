@@ -13,11 +13,14 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Firebase Auth Demo',
-      home: MyHomePage(title: 'Firebase Auth Demo'),
+      theme: ThemeData(primarySwatch: Colors.indigo),
+      home: MyHomePage(title: 'Login'),
     );
   }
 }
@@ -74,6 +77,7 @@ class _RegisterEmailSectionState extends State<RegisterEmailSection> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  FirebaseFirestore db = FirebaseFirestore.instance;
 
   bool _success = false;
   bool _initialState = true;
@@ -81,15 +85,25 @@ class _RegisterEmailSectionState extends State<RegisterEmailSection> {
 
   void _register() async {
     try {
-      await widget.auth.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-      setState(() {
-        _success = true;
-        _userEmail = _emailController.text;
-        _initialState = false;
-      });
+      UserCredential userCredential = await widget.auth
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+      final user = userCredential.user;
+      if (user != null) {
+        await db.collection("users").doc(user.uid).set({
+          "email": user.email,
+          "uid": user.uid,
+        });
+
+        setState(() {
+          _success = true;
+          _userEmail = _emailController.text;
+          _initialState = false;
+        });
+      }
     } catch (e) {
       setState(() {
         _success = false;
@@ -199,9 +213,9 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            child: Text('Test sign in with email and password'),
             padding: const EdgeInsets.all(16),
             alignment: Alignment.center,
+            child: Text('Test sign in with email and password'),
           ),
           TextFormField(
             controller: _emailController,
