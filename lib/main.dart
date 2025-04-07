@@ -19,8 +19,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Firebase Auth Demo',
+<<<<<<< HEAD
       theme: ThemeData(primarySwatch: Colors.indigo),
       home: MyHomePage(title: 'Login'),
+=======
+      theme:ThemeData(primarySwatch: Colors.indigo),
+      home: const AuthGate(),
+>>>>>>> e8cd79bba1a2889180911b421131f822eaff167f
     );
   }
 }
