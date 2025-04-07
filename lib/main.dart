@@ -231,6 +231,9 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             },
           ),
           TextFormField(
+            controller: _passwordController,
+            obscureText: true,
+            decoration: InputDecoration(labelText: 'Password'),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
