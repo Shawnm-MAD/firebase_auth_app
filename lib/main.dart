@@ -231,15 +231,14 @@ class _EmailPasswordFormState extends State<EmailPasswordForm> {
             },
           ),
           TextFormField(
-            controller: _passwordController,
-            decoration: InputDecoration(labelText: 'Password'),
-            obscureText: true,
             validator: (value) {
-              if (value?.isEmpty ?? true) {
+              if (value == null || value.isEmpty) {
                 return 'Please enter some text';
+              } else if (value.length < 6) {
+                return 'Password must be at least 6 characters';
               }
               return null;
-            },
+            }
           ),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
